@@ -9,3 +9,6 @@ target/
 .classpath
 .project
 application-local.properties
+.DS_Store
+HELP.md
+**/.camel-jbang/
