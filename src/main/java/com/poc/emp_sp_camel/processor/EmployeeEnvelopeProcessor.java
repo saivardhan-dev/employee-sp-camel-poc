@@ -10,7 +10,7 @@ public class EmployeeEnvelopeProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
 
-        boolean dequeueSuccess = exchange.getProperty(
+        Boolean dequeueSuccess = exchange.getProperty(
                 "dequeueSuccess", Boolean.class);
         String msgId = exchange.getIn()
                 .getHeader("msgId", String.class);
@@ -19,19 +19,19 @@ public class EmployeeEnvelopeProcessor implements Processor {
         if (Boolean.TRUE.equals(dequeueSuccess)) {
             String eventXml = exchange.getIn().getBody(String.class);
 
-            finalXml = "<EmployeeEvent>"                                        +
-                    "<Dequeued>true</Dequeued>"                          +
-                    "<MessageId>" + msgId + "</MessageId>"               +
-                    "<EventXML>"  + eventXml + "</EventXML>"             +
+            finalXml = "<EmployeeEvent>"                                    +
+                    "<Dequeued>true</Dequeued>"                      +
+                    "<MessageId>" + msgId    + "</MessageId>"        +
+                    "<EventXML>"  + eventXml + "</EventXML>"         +
                     "</EmployeeEvent>";
         } else {
             String error = exchange.getProperty(
                     "errorMessage", String.class);
 
-            finalXml = "<EmployeeEvent>"                                        +
-                    "<Dequeued>false</Dequeued>"                         +
-                    "<MessageId>" + msgId + "</MessageId>"               +
-                    "<EventXML><Error>" + error + "</Error></EventXML>"  +
+            finalXml = "<EmployeeEvent>"                                             +
+                    "<Dequeued>false</Dequeued>"                              +
+                    "<MessageId>" + msgId + "</MessageId>"                    +
+                    "<EventXML><Error>" + error + "</Error></EventXML>"       +
                     "</EmployeeEvent>";
         }
 

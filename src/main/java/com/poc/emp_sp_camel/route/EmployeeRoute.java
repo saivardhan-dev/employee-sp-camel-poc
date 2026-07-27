@@ -14,15 +14,14 @@ public class EmployeeRoute extends RouteBuilder {
         from("Jms:queue:EMPLOYEE_EVENT_Q")
                 .routeId("employee-sp-route")
                 .log(">>> Event received from Oracle AQ: ${header.JMSMessageID}")
-
-                // Step 1 + 2: JSON → Java object → intermediate XML
-                .process("employeeObjProcessor")
-
-                // Step 3: XSLT transform intermediate XML → EventXML
+                .process("employeeRouteProcessor")
+                .choice()
+                .when(exchangeProperty("dequeueSuccess").isEqualTo(true))
                 .to("xslt:employee-transform.xsl")
-
-                // Step 4: Wrap in final envelope
                 .process("employeeEnvelopeProcessor")
+                .otherwise()
+                .process("employeeEnvelopeProcessor")
+                .end()
 
                 .log(">>> Final XML: ${body}")
                 .to("activemq:queue:employee.output")
