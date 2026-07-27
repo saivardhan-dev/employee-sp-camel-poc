@@ -9,12 +9,23 @@ public class EmployeeRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        from("timer:employeeSync?period=10000&repeatCount=1")
-            .routeId("employee-sp-route")
-            .log(">>> Calling stored procedure...")
-            .process("employeeSpProcessor")
-            .log(">>> Result: ${body}")
-            .to("activemq:queue:employee.output")
-            .log(">>> Message sent to AMQ queue: employee.output");
+        errorHandler(defaultErrorHandler());
+
+        from("Jms:queue:EMPLOYEE_EVENT_Q")
+                .routeId("employee-sp-route")
+                .log(">>> Event received from Oracle AQ: ${header.JMSMessageID}")
+
+                // Step 1 + 2: JSON → Java object → intermediate XML
+                .process("employeeObjProcessor")
+
+                // Step 3: XSLT transform intermediate XML → EventXML
+                .to("xslt:employee-transform.xsl")
+
+                // Step 4: Wrap in final envelope
+                .process("employeeEnvelopeProcessor")
+
+                .log(">>> Final XML: ${body}")
+                .to("activemq:queue:employee.output")
+                .log(">>> Message sent to AMQ queue: employee.output");
     }
 }

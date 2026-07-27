@@ -72,11 +72,36 @@
             <artifactId>spring-boot-starter-activemq</artifactId>
         </dependency>
 
+        <!-- Camel generic JMS (used to front Oracle AQ, which speaks plain JMS) -->
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-jms-starter</artifactId>
+        </dependency>
+
+        <!-- Camel XSLT (used by EmployeeRoute to reshape the intermediate XML) -->
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-xslt-starter</artifactId>
+        </dependency>
+
         <!-- Oracle JDBC Driver -->
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc11</artifactId>
             <version>23.3.0.23.09</version>
+        </dependency>
+
+        <!-- Oracle AQ JMS driver, Jakarta-namespace build: provides
+             oracle.jms.AQjmsFactory returning a jakarta.jms.ConnectionFactory
+             backed by Oracle Advanced Queuing. Oracle only publishes aqapi
+             against the old javax.jms API, which is incompatible with Camel
+             4/Spring Boot 4's jakarta.jms requirement, so this is a
+             Jakarta-transformed rebuild - see ../aqapi-jakarta-shim.
+             Run "mvn install" in that module once before building this one. -->
+        <dependency>
+            <groupId>com.poc</groupId>
+            <artifactId>aqapi-jakarta-shim</artifactId>
+            <version>23.3.0.0</version>
         </dependency>
 
         <!-- Jackson JSON -->
