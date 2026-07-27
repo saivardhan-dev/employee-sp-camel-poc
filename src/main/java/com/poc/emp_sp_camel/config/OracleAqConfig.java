@@ -12,6 +12,27 @@ import org.springframework.context.annotation.Configuration;
 
 import java.sql.SQLException;
 
+/**
+ * OracleAqConfig — Configures Oracle Advanced Queue (AQ) as a JMS provider
+ * for Apache Camel.
+ *
+ * Oracle AQ supports the JMS standard natively via the AQjmsFactory.
+ * This configuration creates a dedicated, unpooled OracleDataSource
+ * specifically for AQ — separate from the HikariCP DataSource used for
+ * JDBC/stored procedure calls — because Oracle AQ's JMS layer requires
+ * direct access to the underlying OracleConnection and cannot work with
+ * Hikari's proxied connections.
+ *
+ * The resulting JmsComponent is registered as "Jms" in the Camel context,
+ * allowing routes to consume from Oracle AQ using:
+ *   from("Jms:queue:EMPLOYEE_EVENT_Q")
+ *
+ * Note: This bean registration causes Spring Boot's ActiveMQAutoConfiguration
+ * to back off (it only fires when no ConnectionFactory bean exists). A
+ * separate ActiveMqConfig is therefore required to explicitly wire the
+ * ActiveMQ component.
+ */
+
 @Configuration
 public class OracleAqConfig {
 

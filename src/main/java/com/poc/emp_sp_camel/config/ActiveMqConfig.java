@@ -9,14 +9,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Explicit ActiveMQ ConnectionFactory + "activemq" Camel component.
- * <p>
- * Once OracleAqConfig registers a ConnectionFactory bean for AQ, Spring
- * Boot's own ActiveMQAutoConfiguration backs off (it only fires when no
- * ConnectionFactory bean exists yet), so the "activemq" component would
- * otherwise silently end up wired to the AQ connection factory instead of
- * a real broker. Defining both integrations explicitly avoids relying on
- * that autoconfiguration ordering.
+ * ActiveMqConfig — Configures ActiveMQ Classic as a separate JMS provider
+ * for Apache Camel.
+ *
+ * This configuration is required because once OracleAqConfig registers a
+ * ConnectionFactory bean for Oracle AQ, Spring Boot's
+ * ActiveMQAutoConfiguration backs off — it only fires when no
+ * ConnectionFactory bean exists. Without this explicit configuration,
+ * the "activemq" Camel component would silently wire to the Oracle AQ
+ * connection factory instead of the real ActiveMQ broker.
+ *
+ * The resulting JmsComponent is registered as "activemq" in the Camel
+ * context, allowing routes to publish to ActiveMQ using:
+ *   .to("activemq:queue:employee.output")
  */
 @Configuration
 public class ActiveMqConfig {

@@ -4,6 +4,34 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
+/**
+ * EmployeeEnvelopeProcessor — Step 3 (final step) of the Camel pipeline.
+ *
+ * Wraps the XSLT-transformed XML (EventXML) in a final envelope structure
+ * before publishing to ActiveMQ. The envelope contains:
+ *   - Dequeued   : boolean indicating whether the message was successfully
+ *                  dequeued and processed
+ *   - MessageId  : the JMS MessageID stamped by Oracle AQ at enqueue time
+ *   - EventXML   : the XSLT-transformed employee XML payload
+ *
+ * Final output structure published to ActiveMQ (employee.output):
+ *
+ * <EmployeeEvent>
+ *     <Dequeued>true</Dequeued>
+ *     <MessageId>ID:57557EF2...</MessageId>
+ *     <EventXML>
+ *         <Employee>
+ *             <EmpId>1</EmpId>
+ *             <EmpName>John Doe</EmpName>
+ *             ...
+ *         </Employee>
+ *     </EventXML>
+ * </EmployeeEvent>
+ *
+ * If dequeueSuccess = false, the envelope contains Dequeued=false
+ * and an Error element inside EventXML with the exception message.
+ */
+
 @Component
 public class EmployeeEnvelopeProcessor implements Processor {
 
