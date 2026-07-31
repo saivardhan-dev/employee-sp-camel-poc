@@ -1,35 +1,21 @@
 package com.poc.emp_sp_camel.aq;
 
-import oracle.sql.Datum;
-import oracle.sql.ORAData;
-import oracle.sql.ORADataFactory;
-import oracle.sql.STRUCT;
+import oracle.jdbc.OracleData;
+import oracle.jdbc.OracleDataFactory;
 
-import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Struct;
 
-/**
- * Implements ORADataFactory — the correct Oracle interface for ADT
- * payload factories in createDurableSubscriber().
- * Fixes JMS-137 and JMS-222.
- *
- * Oracle calls create(Datum, int) for each dequeued WF_EVENT_T message.
- * We wrap the STRUCT in WfEventTOraData for downstream processing.
- */
-public class WfEventTPayloadFactory implements ORADataFactory {
+public class WfEventTPayloadFactory implements OracleDataFactory {
 
     public static final WfEventTPayloadFactory INSTANCE =
             new WfEventTPayloadFactory();
 
     private WfEventTPayloadFactory() {}
 
-    /**
-     * Called by Oracle AQ JMS for each dequeued WF_EVENT_T message.
-     * datum is the raw Oracle STRUCT containing WF_EVENT_T attributes.
-     */
     @Override
-    public ORAData create(Datum datum, int sqlType) throws SQLException {
-        if (datum instanceof STRUCT struct) {
+    public OracleData create(Object datum, int sqlType) throws SQLException {
+        if (datum instanceof Struct struct) {
             return new WfEventTOraData(struct);
         }
         return new WfEventTOraData(null);

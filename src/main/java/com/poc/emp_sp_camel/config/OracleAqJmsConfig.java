@@ -6,7 +6,7 @@ import com.poc.emp_sp_camel.aq.WfEventTAqMessageConverter;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
 import oracle.jdbc.pool.OracleDataSource;
-import oracle.jms.AQjmsFactory;
+import oracle.jakarta.jms.AQjmsFactory;
 import org.apache.camel.component.jms.ConsumerType;
 import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.component.jms.JmsConfiguration;
@@ -48,6 +48,8 @@ public class OracleAqJmsConfig {
         ds.setURL(jdbcUrl);
         ds.setUser(jdbcUsername);
         ds.setPassword(jdbcPassword);
+        System.out.println(">>> DB URL: " + jdbcUrl);
+        System.out.println(">>> DB User: " + jdbcUsername);
         return ds;
     }
 

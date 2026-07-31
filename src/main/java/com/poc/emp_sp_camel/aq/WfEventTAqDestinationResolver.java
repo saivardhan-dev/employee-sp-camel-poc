@@ -3,7 +3,7 @@ package com.poc.emp_sp_camel.aq;
 import jakarta.jms.Destination;
 import jakarta.jms.JMSException;
 import jakarta.jms.Session;
-import oracle.jms.AQjmsSession;
+import oracle.jakarta.jms.AQjmsSession;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.util.StringUtils;
 
@@ -21,13 +21,13 @@ public class WfEventTAqDestinationResolver implements DestinationResolver {
                                               boolean pubSubDomain)
             throws JMSException {
 
-        // Fallback for non-AQ sessions (e.g. ActiveMQ)
-        if (!(session instanceof AQjmsSession aqSession)) {
+        if (!(session instanceof AQjmsSession)) {
             if (pubSubDomain) {
                 return session.createTopic(destinationName);
             }
             return session.createQueue(destinationName);
         }
+        AQjmsSession aqSession = (AQjmsSession) session;
 
         String queueName = unqualifiedName(destinationName);
         String owner     = owner(destinationName);
@@ -46,7 +46,8 @@ public class WfEventTAqDestinationResolver implements DestinationResolver {
 
     private String unqualifiedName(String destinationName) {
         int dot = destinationName.indexOf('.');
-        if (dot > 0 && dot + 1 < destinationName.length()) {
+        int len = destinationName.length();
+        if (dot > 0 && dot + 1 < len) {
             return destinationName.substring(dot + 1);
         }
         return destinationName;

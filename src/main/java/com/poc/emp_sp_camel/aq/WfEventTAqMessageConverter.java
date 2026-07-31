@@ -4,7 +4,7 @@ import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
-import oracle.jms.AQjmsAdtMessage;
+import oracle.jakarta.jms.AQjmsAdtMessage;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.MessageConverter;
 
@@ -32,14 +32,16 @@ public class WfEventTAqMessageConverter implements MessageConverter {
             if (message instanceof AQjmsAdtMessage adtMessage) {
                 Object payload = adtMessage.getAdtPayload();
 
-                // Payload is WfEventTOraData (created by WfEventTPayloadFactory)
+                log.debug(">>> ADT payload type: {}",
+                        payload == null ? "null"
+                                : payload.getClass().getName());
+
                 if (payload instanceof WfEventTOraData oraData) {
                     return structToXml(oraData.getStruct());
                 }
 
-                // Fallback — raw STRUCT
-                if (payload instanceof java.sql.Struct struct) {
-                    return structToXml((oracle.sql.STRUCT) struct);
+                if (payload instanceof Struct struct) {
+                    return structToXml(struct);
                 }
 
                 throw new MessageConversionException(
@@ -47,6 +49,7 @@ public class WfEventTAqMessageConverter implements MessageConverter {
                                 + (payload == null ? "null"
                                 : payload.getClass().getName()));
             }
+
             throw new MessageConversionException(
                     "Unsupported JMS message type: "
                             + message.getClass().getName());
@@ -72,9 +75,7 @@ public class WfEventTAqMessageConverter implements MessageConverter {
     }
 
     private String structToXml(Struct struct) throws SQLException {
-        // getAttributes() returns all WF_EVENT_T fields in definition order
         Object[] attrs = struct.getAttributes();
-
         return "<" + ROOT_ELEMENT + ">"
                 + xml("EVENT_NAME",           attrs, 0)
                 + xml("EVENT_KEY",            attrs, 1)
@@ -110,4 +111,8 @@ public class WfEventTAqMessageConverter implements MessageConverter {
                 ? attrs[index].toString().trim() : "";
         return "<" + name + ">" + value + "</" + name + ">";
     }
+
+    private static final org.slf4j.Logger log =
+            org.slf4j.LoggerFactory.getLogger(
+                    WfEventTAqMessageConverter.class);
 }

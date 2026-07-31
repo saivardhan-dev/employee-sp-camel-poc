@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
  * context, allowing routes to publish to ActiveMQ using:
  *   .to("activemq:queue:employee.output")
  */
+
 @Configuration
 public class ActiveMqConfig {
 

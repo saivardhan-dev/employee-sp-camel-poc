@@ -1,31 +1,25 @@
 package com.poc.emp_sp_camel.aq;
 
-import oracle.sql.Datum;
-import oracle.sql.ORAData;
-import oracle.sql.STRUCT;
+import oracle.jdbc.OracleData;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Struct;
 
-/**
- * ORAData wrapper for WF_EVENT_T STRUCT.
- * Returned by WfEventTPayloadFactory.create() for each dequeued message.
- * Passed as AQjmsAdtMessage payload — retrieved via getAdtPayload().
- */
-public class WfEventTOraData implements ORAData {
+public class WfEventTOraData implements OracleData {
 
-    private final STRUCT struct;
+    private final Struct struct;
 
-    public WfEventTOraData(STRUCT struct) {
+    public WfEventTOraData(Struct struct) {
         this.struct = struct;
     }
 
-    public STRUCT getStruct() {
+    public Struct getStruct() {
         return struct;
     }
 
     @Override
-    public Datum toDatum(Connection connection) throws SQLException {
+    public Object toJDBCObject(Connection connection) throws SQLException {
         return struct;
     }
 }
