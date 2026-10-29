@@ -21,6 +21,7 @@ import java.util.Set;
  * 2 OUT collection arrays (positions 23-24).
  * Returns output collections marshalled to XML.
  */
+
 @Repository
 public class ShippingOrderDaoAqJms {
 
